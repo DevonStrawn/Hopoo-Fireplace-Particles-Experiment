@@ -8,11 +8,11 @@ var particle3 = new Image();
 
 function init()
 {
-	background.src = 'Assets/HopoosOriginalBG.png';
-	foreground.src = 'Assets/HopoosOriginalFG.png';
-	particle1.src = 'Assets/Particle1.png';
-	particle2.src = 'Assets/Particle2.png';
-	particle3.src = 'Assets/Particle3.png';
+	background.src = 'Assets/HopoosOriginalBG_2x.png';
+	foreground.src = 'Assets/HopoosOriginalFG_2x.png';
+	particle1.src = 'Assets/Particle1_2x.png';
+	particle2.src = 'Assets/Particle2_2x.png';
+	particle3.src = 'Assets/Particle3_2x.png';
 	window.requestAnimationFrame(draw);
 }
 
@@ -140,32 +140,11 @@ function draw()
 
 
 	var ctx = canvas.getContext('2d')
-
-/*
-	ctx.mozImageSmoothingEnabled = false
-	ctx.webkitImageSmoothingEnabled = false
-	ctx.msImageSmoothingEnabled = false
-	ctx.imageSmoothingEnabled = false
-
-
-//	ctx.globalCompositeOperation = 'destination-over';
-	ctx.fillStyle = "#3C1D16";
-//	ctx.clearRect(0,0,150,150); // clear canvas
-	ctx.fillRect(0,0,150,150); // clear canvas
-*/
 	ctx.drawImage(background, 0, 0)
 
 	var time = new Date();
 	var seconds = new Date().getTime() / 1000;
 	var deltaSeconds = seconds - lastSeconds;
-
-/*
-	ctx.fillStyle = "rgb(200,0,0)";
-	ctx.fillRect (10, 10, 55, 50);
-
-	ctx.fillStyle = "rgba(0, 0, 200, 0.5)";
-	ctx.fillRect (30, 30, 55, 50);
-*/
 
 	// Move origin of particle systems randomly left & right
 	particleSystems.map(function (particleSystem)
@@ -181,7 +160,7 @@ function draw()
 		particleSystem.particles.map(function (particle)
 		{
 			var size = lerp(particleSystem.sizeStart, particleSystem.sizeEnd, particle.timeAlive / particle.lifetime)
-			ctx.drawImage(particleSystem.image, particle.x, particle.y, size * 2, size * 2);
+			ctx.drawImage(particleSystem.image, particle.x * 2.0, particle.y * 2.0, size * 4, size * 4);
 		})
 	})
 
