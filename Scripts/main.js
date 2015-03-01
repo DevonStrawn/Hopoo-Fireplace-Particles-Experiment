@@ -1,3 +1,6 @@
+
+
+
 var canvas = document.getElementById('tutorial');
 
 var background = new Image();
@@ -11,22 +14,22 @@ var particleImages = [particle1, particle2, particle3, particle4];
 
 function init()
 {
-	background.src = 'Assets/HopoosOriginalBG_2x.png';
-	foreground.src = 'Assets/HopoosOriginalFG_2x.png';
-	particle1.src = 'Assets/HopoosOriginalParticle1_2x.png';
-	particle2.src = 'Assets/HopoosOriginalParticle2_2x.png';
-	particle3.src = 'Assets/HopoosOriginalParticle3_2x.png';
-	particle4.src = 'Assets/HopoosOriginalParticle4_2x.png';
+	background.src = 'Assets/HopoosOriginalBG.png';
+	foreground.src = 'Assets/HopoosOriginalFG.png';
+	particle1.src = 'Assets/HopoosOriginalParticle1.png';
+	particle2.src = 'Assets/HopoosOriginalParticle2.png';
+	particle3.src = 'Assets/HopoosOriginalParticle3.png';
+	particle4.src = 'Assets/HopoosOriginalParticle4.png';
 
 	// Wait for the images to load before continuing.
 
 	var numImagesLoaded = 0;
 	particleImages.map(function (particleImage)
 	{
-		particleImage.onload = function ()
+		particleImage.onload = function (event)
 		{
 			numImagesLoaded++
-			if (numImagesLoaded == particleImages.length)
+			if (numImagesLoaded === particleImages.length)
 			{
 				window.requestAnimationFrame(draw);
 			}
@@ -35,7 +38,7 @@ function init()
 
 }
 
-function ParticleSystem(x, y, radiusX, radiusY, velocityX, velocityY, birthRate, lifetime, images, sizeStart, sizeEnd, maxParticles, color)
+function ParticleSystem(x, y, radiusX, radiusY, velocityX, velocityY, birthRate, lifetime, images, sizeStart, sizeEnd, maxParticles, color, flicker)
 {
 	this.x = x
 	this.y = y
@@ -50,10 +53,11 @@ function ParticleSystem(x, y, radiusX, radiusY, velocityX, velocityY, birthRate,
 	this.sizeEnd = sizeEnd
 	this.maxParticles = maxParticles
 	this.color = color
+	this.flicker = flicker
 
-	this.particles = [];
-	this.numParticlesEmitted = 0;
-	this.timeAlive = 0;
+	this.particles = []
+	this.numParticlesEmitted = 0
+	this.timeAlive = 0
 }
 
 particlePool = [];
@@ -87,6 +91,9 @@ ParticleSystem.prototype.Tick = function(deltaSeconds)
 		particle.y += deltaSeconds * particle.velocityY
 
 		particle.rotation += deltaSeconds * particle.angularVelocity
+
+		if (this.flicker)
+			particle.flicker != particle.flicker
 	})
 
 	// Remove dead particles.
@@ -118,12 +125,18 @@ ParticleSystem.prototype.Tick = function(deltaSeconds)
 			var imageIndex = Math.round(Math.random() * (this.images.length - 1))
 			var image = this.images[imageIndex]
 
-			this.particles.push(GetParticle(this.lifetime,
+			var newParticle = GetParticle(this.lifetime,
 				this.x + Math.random() * this.radiusX - this.radiusX / 2.0, this.y + Math.random() * this.radiusY - this.radiusY / 2.0,
 				this.velocityX + Math.random(), this.velocityY + Math.random() * 12.0,
 				image,
 				Math.random() * Math.PI - Math.PI / 2.0, Math.random() * Math.PI / 10.0 - Math.PI / 20.0)
-			)
+
+			if (this.flicker)
+				newParticle.flicker = Math.random() > 0.5
+			else
+				newParticle.flicker = false
+
+			this.particles.push(newParticle)
 		}
 
 		this.lastParticleCreatedTime = this.currentTime
@@ -152,10 +165,13 @@ Particle.prototype.Initialize = function(lifetime, initialX, initialY, velocityX
 
 var particleSystems = [];
 
+var velocityY = -80.0
 var maxParticles = 600;
-particleSystems.push(new ParticleSystem(306.0, 184.0,    15.0, 3.0,    -0.5, -60.0,   380.0, 1.25,   particleImages,  2.5, 0.35,   maxParticles, "#82301E"))
-particleSystems.push(new ParticleSystem(306.0, 184.0,    15.0, 3.0,    -0.5, -60.0,   237.0, 0.85,   particleImages,  2.0, 0.35,   maxParticles, "#FF7E28"))
-particleSystems.push(new ParticleSystem(306.0, 184.0,    12.0, 3.0,    -0.5, -60.0,   123.0, 1.0,   particleImages,  1.0, 0.25,   maxParticles*2, "#FFD65E"))
+particleSystems.push(new ParticleSystem(306.0, 184.0,    12.0, 3.0,    -0.5, velocityY,   280.0, 1.0,   particleImages,  2.0, 0.35,   maxParticles, "#82301E", false))
+particleSystems.push(new ParticleSystem(306.0, 184.0,    12.0, 3.0,    -0.5, velocityY,   170.0, 0.65,   particleImages,  1.5, 0.35,   maxParticles, "#FF7E28", false))
+particleSystems.push(new ParticleSystem(306.0, 187.0,    12.0, 3.0,    -0.5, velocityY,   123.0, 0.5,   particleImages,   0.75, 0.25,  maxParticles*3, "#FFD65E", false))
+particleSystems.push(new ParticleSystem(306.0, 187.0,    32.0, 3.0,    -0.5, velocityY,   23.0, 0.55,   particleImages,   0.75, 0.25,  maxParticles, "#FFD65E", true))
+particleSystems.push(new ParticleSystem(306.0, 187.0,    22.0, 3.0,    -0.5, velocityY,   23.0, 0.8,   particleImages,    0.5, 0.25,   maxParticles, "#FFD65E", true))
 //particleSystems.push(new ParticleSystem(???))
 //particleSystems.push(new ParticleSystem(???))
 
@@ -220,7 +236,7 @@ function draw()
 	// Move origin of particle systems randomly left & right
 	particleSystems.map(function (particleSystem)
 	{
-		particleSystem.x = 306 + Math.sin(seconds * 3.0) * 2.0 + Math.sin(seconds * 8.7) * 2.0
+		particleSystem.x = 306 + Math.random() * 2 + Math.sin(seconds * 24.0) * 2.0 + Math.sin(seconds * 8.7) * 2.0
 	})
 
 	ctx.fillStyle = "rgba(0, 0, 200, 1.0)";
@@ -243,11 +259,12 @@ function draw()
 			ctx.save()
 
 //			ctx.translate(-particle.x * 2.0, -particle.y * 2.0)
-			ctx.translate(particle.x * 2.0, particle.y * 2.0)
+			ctx.translate(particle.x, particle.y)
 			ctx.rotate(particle.rotation)
 
 //			ctx.drawImage(colorizedImage, particle.x * 2.0, particle.y * 2.0, size * 4, size * 4);
-			ctx.drawImage(colorizedImage, 0, 0, size * 4, size * 4);
+			if (particle.flicker != true)
+				ctx.drawImage(colorizedImage, 0, 0, size * 4, size * 4);
 
 			ctx.restore()
 		})
